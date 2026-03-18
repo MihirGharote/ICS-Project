@@ -1,13 +1,7 @@
 #include <stdio.h>
-#include <string.h>
-typedef struct game {
-    char name[50];
-} something;
+
+#include "./enemies.h"
 
 int main() {
-    printf("The game runs!\n");
-    something e;
-    strcpy(e.name, "PLEASE!!");
-    printf("%s", e.name);
-    return 0;
+    printf("%d", getEnemyDamage(enemies[0], 0));
 }
