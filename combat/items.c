@@ -2,7 +2,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
-#include "items.h"
+#include "./items.h"
 
 // what damage will be dome by each type
 int dmg_base_values[] = {

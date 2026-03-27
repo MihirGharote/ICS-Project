@@ -1,7 +1,7 @@
 #pragma once
 
-#include "combatAbstracts/moves.h"
-#include "combatAbstracts/stats.h"
+#include "./combatAbstracts/moves.h"
+#include "./combatAbstracts/stats.h"
 
 typedef struct {
     char name[64];
