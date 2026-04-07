@@ -1,0 +1,15 @@
+
+                                          CHOSE WISELY
+
+OPTION1 :WOODEN MALLET
+You grip the splintered handle of the Wooden Mallet and swing with everything you have. THWACK. The wood bounces off the iron plates!
+Health Cost: -10 
+Wisdom Gain: +5 
+
+
+OPTION2:HANUMAN'S GADA
+You summon the weight of the Hanuman's Gada. As you lift it, the weapon feels light in your hands but heavy with divine intent. You deliver a single, focused strike
+Health Cost: 0 
+Wisdom Gain: +25
+
+                                    Now chose either 1 or 2
