@@ -108,5 +108,8 @@ Item item_from_weapon(Weapon w, int gold_value);
 Item item_from_armor(Armor a, int gold_value);
 Item item_health_potion(int heal_amount);
 Item item_antidote(void);
+void use_item(Item *it, Stats *player_stats, StatusEffect player_afflictions[]);
+void cure_poison(StatusEffect active_effects[]);
 
+#endif
 #endif

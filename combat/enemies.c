@@ -20,14 +20,20 @@ Enemy enemies[2] = {
     {
         "Goblin",
         "A glint of wickedness flashes in its crooked grin",
-        {4, 5, 8},
-        1,
+        {6, 5, 8, 100, 100},
+        2,
         {{
             AGGRESSIVE,
-            5,
-            -20,
+            10,
+            0,
             {{NO_STAT, 0}},
             {{NO_STATUS, 0}}
+        },{
+            AGGRESSIVE,
+            5,
+            0,
+            {{NO_STAT, 0}},
+            {{POISON, 3}}
         }},
         {{NO_STATUS, 0}}
     }

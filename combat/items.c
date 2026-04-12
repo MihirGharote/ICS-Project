@@ -26,7 +26,7 @@ int calculate_weapon_damage(Weapon w, int wisdom_level, float strength_factor) {
     int total_from_types = 0;
     float wisdom_mult = 1.0f + (wisdom_level * 0.10f); 
 
-    for (int i = 0; i < 11; i++) {
+    for (int i = 0; i < 12; i++) {
         if (w.dmg_type & (1 << i)) {
             total_from_types += dmg_base_values[i];
         }
@@ -238,10 +238,28 @@ Item item_health_potion(int heal_amount) {
     return it;
 }
 
-Item item_antidote(void) {
-    Item it; memset(&it, 0, sizeof(it));
-    strncpy(it.name, "Antidote", 47);
-    it.type = ITEM_CONSUMABLE;
-    it.data.consumable.cure_poison = 1;
-    return it;
+void cure_poison(StatusEffect active_effects[]) {
+    int cured = 0;
+    for (int i = 0; i < 4; i++) {
+        if (active_effects[i].status & POISON) {
+            active_effects[i].status = NO_STATUS;
+            active_effects[i].severity = 0;
+            cured = 1;
+        }
+    }
+    if (cured) printf("Antidote used! The poison is gone.\n");
 }
+
+void use_item(Item *it, Stats *player_stats, StatusEffect player_afflictions[]) {
+    if (it->type != ITEM_CONSUMABLE) return;
+
+    if (it->data.consumable.heal_hp > 0) {
+        player_stats->hp += it->data.consumable.heal_hp;
+        if (player_stats->hp > player_stats->max_hp) 
+            player_stats->hp = player_stats->max_hp;
+    }
+    if (it->data.consumable.cure_poison) {
+        cure_poison(player_afflictions);
+    }
+}
+
