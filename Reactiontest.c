@@ -11,7 +11,7 @@ void manual_delay(int seconds) {
 }
 
 int main() {
-    printf("--- REACTION TEST (Standard C) ---\n");
+    printf(" REACTION TEST (Standard C)\n");
     printf("Press ENTER to start...");
     getchar();
 
