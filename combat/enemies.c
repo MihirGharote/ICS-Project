@@ -16,7 +16,7 @@ int getEnemyDamage(Enemy enemy, unsigned short move) {
     return base + atck;
 }
 
-Enemy enemies[2] = {
+Enemy enemies[1] = {
     {
         "Goblin",
         "A glint of wickedness flashes in its crooked grin",

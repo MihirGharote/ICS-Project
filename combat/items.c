@@ -238,6 +238,15 @@ Item item_health_potion(int heal_amount) {
     return it;
 }
 
+Item item_antidote(void) {
+    Item it; memset(&it, 0, sizeof(it));
+    strncpy(it.name, "Antidote", MAX_ITEM_NAME - 1);
+    strncpy(it.desc, "A bitter brew that purges toxins.", MAX_ITEM_DESC - 1);
+    it.type = ITEM_CONSUMABLE;
+    it.data.consumable.cure_poison = 1; // Flag to be checked in use_item
+    return it;
+}
+
 void cure_poison(StatusEffect active_effects[]) {
     int cured = 0;
     for (int i = 0; i < 4; i++) {

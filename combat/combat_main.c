@@ -26,9 +26,12 @@ void handle_status_ticks(Stats *target_stats, StatusEffect active_effects[]) {
 
 int main() {
     int dmg = getEnemyDamage(enemies[0], 1); 
-    printf("%s hits for %d damage!\n", enemies[0].name, dmg);
+    printf("%s hits for %d damage!\n", enemies[0].name, dmg); [cite: 1]
+    Armor my_shield = armor_basic_shield(); [cite: 3]
+    apply_damage(&enemies[0].status, dmg, my_shield.defense_
+    value); [cite: 1]
     handle_status_ticks(&enemies[0].stats, enemies[0].afflictions);
-    Item my_antidote = item_antidote();
-    use_item(&my_antidote, &enemies[0].stats, enemies[0].afflictions);
+    Item my_antidote = item_antidote(); [cite: 1]
+    use_item(&my_antidote, &enemies[0].stats, enemies[0].afflictions); [cite: 1]
     return 0;
 }

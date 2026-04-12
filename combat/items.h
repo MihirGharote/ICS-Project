@@ -112,4 +112,3 @@ void use_item(Item *it, Stats *player_stats, StatusEffect player_afflictions[]);
 void cure_poison(StatusEffect active_effects[]);
 
 #endif
-#endif
