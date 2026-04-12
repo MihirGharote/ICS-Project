@@ -2,6 +2,8 @@
 #define ITEMS_H
 
 #include <stdio.h>
+#include "./combatAbstracts/stats.h"
+#include "./combatAbstracts/status.h"
 
 #define MAX_ITEM_NAME    48
 #define MAX_ITEM_DESC    128
