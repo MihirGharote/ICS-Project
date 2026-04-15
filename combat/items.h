@@ -104,6 +104,12 @@ Weapon weapon_hanuman_gada(void);  // gada
 Weapon weapon_gandiv(void);  // bow
 Weapon weapon_amaterasu_beast(void);  //fiery sword
 
+// Enemy Weapons
+Weapon weapon_iron_fist(void);
+Weapon weapon_petrifying_slam(void);
+Weapon weapon_dazzling_thief(void);
+Weapon weapon_thunderous_cyclone(void);
+
 // Shield
 Armor armor_basic_shield(void);
 Armor armor_aegis(void); // upgraded shield
