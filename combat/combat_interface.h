@@ -3,6 +3,7 @@
 #include "./player.h"
 #include "./enemies.h"
 #include "./items.h"
+#include "./combat.h"
 
 // Get current equipped weapon for player
 Weapon* get_player_current_weapon(Player *player);
@@ -22,12 +23,12 @@ int get_player_available_moves(Player *player, int* out_move_indices, int max_co
 const char** get_all_move_type_names(void);
 
 // Execute player's chosen move
-// move_type_index: index of damage type (0-11)
-// Returns true if move was successful
-int execute_player_choice_move(Player *player, Enemy *enemy, int move_type_index);
+// Returns message string
+char* execute_player_choice_move(Player *player, Enemy *enemy, int move_type_index);
 
 // Get enemy's random move for their turn
 int get_enemy_random_move(Enemy *enemy);
 
 // Execute enemy's move
-void execute_enemy_choice_move(Enemy *enemy, Player *player, int move_type_index);
+// Returns message string
+char* execute_enemy_choice_move(Enemy *enemy, Player *player, int move_type_index);

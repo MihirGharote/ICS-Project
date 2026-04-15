@@ -17,6 +17,7 @@
 #endif
 #include <stdlib.h>
 #include <time.h>
+#include <string.h>
 #include "./enemies.h"
 #include "./items.h"
 #include "./player.h"
@@ -36,16 +37,18 @@ void apply_damage(Stats *target_stats, int incoming_raw_dmg, int shield_hp_bonus
     if (target_stats->hp < 0) target_stats->hp = 0;
 }
 
-void handle_status_ticks(Stats *target_stats, StatusEffect active_effects[]) {
+char* handle_status_ticks(Stats *target_stats, StatusEffect active_effects[]) {
+    static char status_msg[256];
+    int msg_pos = 0;
     for (int i = 0; i < 4; i++) {
         if (active_effects[i].status & POISON) {
             target_stats->hp -= active_effects[i].severity; 
             if (target_stats->hp < 0) target_stats->hp = 0;
-            printw("Poison tick! Target takes %d damage. Current HP: %d\n", 
+            msg_pos += snprintf(status_msg + msg_pos, sizeof(status_msg) - msg_pos, "Poison tick! Target takes %d damage. Current HP: %d\n", 
                     active_effects[i].severity, target_stats->hp);
-            refresh();
         }
     }
+    return status_msg;
 }
 
 void executeMove(Move move, Stats *attacker_stats, Stats *target_stats, StatusEffect target_afflictions[]) {
@@ -92,7 +95,8 @@ void executeMove(Move move, Stats *attacker_stats, Stats *target_stats, StatusEf
     }
 }
 
-int executeWeaponMove(Weapon weapon, int dmg_type_index, Stats *attacker_stats, Stats *target_stats, StatusEffect target_afflictions[], int attacker_wisdom) {
+char* executeWeaponMove(Weapon weapon, int dmg_type_index, Stats *attacker_stats, Stats *target_stats, StatusEffect target_afflictions[], int attacker_wisdom) {
+    static char message[256];
     // Calculate damage for this specific move type
     int damage = calculate_move_type_damage(weapon, dmg_type_index, attacker_wisdom, 1.0f);
     
@@ -103,9 +107,6 @@ int executeWeaponMove(Weapon weapon, int dmg_type_index, Stats *attacker_stats, 
     target_stats->hp -= final_damage;
     if (target_stats->hp < 0) target_stats->hp = 0;
     
-    printw("Dealt %d damage with %s!\n", final_damage, weapon.name);
-    refresh();
-    
     // Poison damage type special handling
     if (dmg_type_index == 11) { // DMG_POISON
         for (int j = 0; j < 4; j++) {
@@ -115,11 +116,24 @@ int executeWeaponMove(Weapon weapon, int dmg_type_index, Stats *attacker_stats, 
                 break;
             }
         }
-        printw("Poison applied!\n");
-        refresh();
+        strcpy(message, "Dealt ");
+        char dmg_str[10];
+        sprintf(dmg_str, "%d", final_damage);
+        strcat(message, dmg_str);
+        strcat(message, " damage with ");
+        strcat(message, weapon.name);
+        strcat(message, "! Poison applied!");
+    } else {
+        strcpy(message, "Dealt ");
+        char dmg_str[10];
+        sprintf(dmg_str, "%d", final_damage);
+        strcat(message, dmg_str);
+        strcat(message, " damage with ");
+        strcat(message, weapon.name);
+        strcat(message, "!");
     }
     
-    return final_damage;
+    return message;
 }
 
 // Combat interface funcns
@@ -155,11 +169,13 @@ const char** get_all_move_type_names(void) {
     return move_names;
 }
 
-int execute_player_choice_move(Player *player, Enemy *enemy, int move_type_index) {
-    int damage_dealt = executeWeaponMove(player->equipped_weapon, move_type_index, &player->stats, 
+char* execute_player_choice_move(Player *player, Enemy *enemy, int move_type_index) {
+    char* message = executeWeaponMove(player->equipped_weapon, move_type_index, &player->stats, 
                       &enemy->stats, enemy->afflictions, player->wisdom_level);
+    int damage_dealt = calculate_move_type_damage(player->equipped_weapon, move_type_index, player->wisdom_level, 1.0f) - enemy->stats.defn;
+    if (damage_dealt < 0) damage_dealt = 0;
     player->wisdom_level += calculate_wisdom_increase(damage_dealt);
-    return 1; // success
+    return message;
 }
 
 int get_enemy_random_move(Enemy *enemy) {
@@ -172,32 +188,43 @@ int get_enemy_random_move(Enemy *enemy) {
     return 0;
 }
 
-void execute_enemy_choice_move(Enemy *enemy, Player *player, int move_type_index) {
-    executeWeaponMove(enemy->equipped_weapon, move_type_index, &enemy->stats, 
+char* execute_enemy_choice_move(Enemy *enemy, Player *player, int move_type_index) {
+    return executeWeaponMove(enemy->equipped_weapon, move_type_index, &enemy->stats, 
                       &player->stats, player->afflictions, enemy->wisdom_level);
 }
 
-void startCombat(Player *player, Enemy *enemy) {
-    char* move_names[] = {"PUNCH", "SLASH", "WHACKING", "STAB", "THROW", "FRONTKICK", "AXEKICK", "SIDEKICK", "FIRE", "LIGHTNING", "SHOOT", "POISON"};
-    printw("Combat starts! %s vs %s\n", player->name, enemy->name);
-    printw("%s uses: %s\n", enemy->name, enemy->equipped_weapon.name);
-    refresh();
+char* startCombat(Player *player, Enemy *enemy) {
+    static char combat_log[4096];
+    strcpy(combat_log, "Combat starts! ");
+    strcat(combat_log, player->name);
+    strcat(combat_log, " vs ");
+    strcat(combat_log, enemy->name);
+    strcat(combat_log, "\n");
+    strcat(combat_log, enemy->name);
+    strcat(combat_log, " uses: ");
+    strcat(combat_log, enemy->equipped_weapon.name);
+    strcat(combat_log, "\n");
+    
     srand(time(NULL));
 
     while (player->stats.hp > 0 && enemy->stats.hp > 0) {
         // Player turn
-        printw("\n========== PLAYER TURN ==========\n");
-        printw("Your HP: %d/%d\n", player->stats.hp, player->stats.max_hp);
-        printw("Enemy HP: %d/%d\n", enemy->stats.hp, enemy->stats.max_hp);
-        printw("Equipped: %s\n", player->equipped_weapon.name);
+        strcat(combat_log, "\n========== PLAYER TURN ==========\n");
+        char hp_str[50];
+        sprintf(hp_str, "Your HP: %d/%d\n", player->stats.hp, player->stats.max_hp);
+        strcat(combat_log, hp_str);
+        sprintf(hp_str, "Enemy HP: %d/%d\n", enemy->stats.hp, enemy->stats.max_hp);
+        strcat(combat_log, hp_str);
+        strcat(combat_log, "Equipped: ");
+        strcat(combat_log, player->equipped_weapon.name);
+        strcat(combat_log, "\n");
         
         // Get available move types
         int move_types[12];
         int move_count = get_available_move_types(player->equipped_weapon, move_types, 12);
         
         if (move_count == 0) {
-            printw("No available moves!\n");
-            refresh();
+            strcat(combat_log, "No available moves!\n");
             break;
         }
         
@@ -206,36 +233,47 @@ void startCombat(Player *player, Enemy *enemy) {
         // For now, default to first move
         int selected_move_type = move_types[0];
         
-        int damage_dealt = executeWeaponMove(player->equipped_weapon, selected_move_type, &player->stats, &enemy->stats, enemy->afflictions, player->wisdom_level);
-        player->wisdom_level += calculate_wisdom_increase(damage_dealt);
-        handle_status_ticks(&enemy->stats, enemy->afflictions);
+        char* player_msg = execute_player_choice_move(player, enemy, selected_move_type);
+        strcat(combat_log, player_msg);
+        strcat(combat_log, "\n");
+        
+        char* status_msg = handle_status_ticks(&enemy->stats, enemy->afflictions);
+        if (strlen(status_msg) > 0) {
+            strcat(combat_log, status_msg);
+        }
         
         if (enemy->stats.hp <= 0) {
-            printw("You win!\n");
-            refresh();
+            strcat(combat_log, "You win!\n");
             break;
         }
 
         // Enemy turn
-        printw("\n========== ENEMY TURN ==========\n");
+        strcat(combat_log, "\n========== ENEMY TURN ==========\n");
         int enemy_move_types[12];
         int enemy_move_count = get_available_move_types(enemy->equipped_weapon, enemy_move_types, 12);
         
         if (enemy_move_count > 0) {
             int enemy_choice = rand() % enemy_move_count;
             int enemy_selected_move = enemy_move_types[enemy_choice];
-            printw("%s uses %s!\n", enemy->name, move_names[enemy_selected_move]);
-            refresh();
-            executeWeaponMove(enemy->equipped_weapon, enemy_selected_move, &enemy->stats, &player->stats, player->afflictions, enemy->wisdom_level);
+            char move_str[50];
+            sprintf(move_str, "%s uses %s!\n", enemy->name, get_move_type_name(enemy_selected_move));
+            strcat(combat_log, move_str);
+            char* enemy_msg = execute_enemy_choice_move(enemy, player, enemy_selected_move);
+            strcat(combat_log, enemy_msg);
+            strcat(combat_log, "\n");
         }
         
-        handle_status_ticks(&player->stats, player->afflictions);
+        char* player_status_msg = handle_status_ticks(&player->stats, player->afflictions);
+        if (strlen(player_status_msg) > 0) {
+            strcat(combat_log, player_status_msg);
+        }
         if (player->stats.hp <= 0) {
-            printw("You lose!\n");
-            refresh();
+            strcat(combat_log, "You lose!\n");
             break;
         }
     }
+    
+    return combat_log;
 }
 
 int main() {
