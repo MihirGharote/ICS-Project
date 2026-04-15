@@ -8,11 +8,11 @@
 typedef struct {
     char name[64];
     Stats stats;
-    unsigned short noOfMoves;
-    Move moves[4];
+    Weapon equipped_weapon;
     StatusEffect afflictions[4];
     Item inventory[10]; // Simple inventory
     int inventory_count;
+    int wisdom_level; // For damage/defense calculations
 } Player;
 
 Player createPlayer();

@@ -79,6 +79,9 @@ extern int dmg_base_values[];
 // Logic funcns for combat and defence
 int calculate_weapon_damage(Weapon w, int wisdom_level, float strength_factor);
 int calculate_defense(Armor a, int wisdom_level);
+int calculate_move_type_damage(Weapon w, int dmg_type_index, int wisdom_level, float strength_factor);
+int get_available_move_types(Weapon w, int* out_types_indices, int max_count);
+int calculate_wisdom_increase(int damage_dealt);
 
 // Evokution of the weapons based on wisdom level
 Weapon get_evolved_weapon(int slot_id, int wisdom_level);

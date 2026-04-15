@@ -8,9 +8,9 @@ typedef struct {
     char name[64];
     char desc[256];
     Stats stats;
-    unsigned short noOfMoves;
-    Move moves[4];
+    Weapon equipped_weapon;
     StatusEffect afflictions[4]; // Current Status Effects
+    int wisdom_level; // For damage/defense calculations
 } Enemy;
 
 int getEnemyDamage(Enemy enemy, unsigned short move);

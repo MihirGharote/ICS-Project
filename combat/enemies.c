@@ -4,16 +4,9 @@
 #include "./enemies.h"
 
 int getEnemyDamage(Enemy enemy, unsigned short move) {
-    if (move >= enemy.noOfMoves) {
-        puts("Invalid move no.\n");
-        exit(EXIT_FAILURE);
-    }
-    if (enemy.moves[move].moveType != AGGRESSIVE) {
-        return 0;
-    }
-    int base = enemy.moves[move].base;
-    int atck = enemy.stats.atck;
-    return base + atck;
+    // This function is deprecated - use executeWeaponMove instead
+    // Keeping for backward compatibility if needed
+    return calculate_move_type_damage(enemy.equipped_weapon, move, enemy.wisdom_level, 1.0f);
 }
 
 Enemy enemies[1] = {
@@ -21,20 +14,8 @@ Enemy enemies[1] = {
         "Goblin",
         "A glint of wickedness flashes in its crooked grin",
         {6, 5, 8, 100, 100},
-        2,
-        {{
-            AGGRESSIVE,
-            10,
-            0,
-            {{NO_STAT, 0}},
-            {{NO_STATUS, 0}}
-        },{
-            AGGRESSIVE,
-            5,
-            0,
-            {{NO_STAT, 0}},
-            {{POISON, 3}}
-        }},
-        {{NO_STATUS, 0}}
+        {0}, // equipped_weapon - will be initialized with weapon_gada() at runtime or set here
+        {{NO_STATUS, 0}, {NO_STATUS, 0}, {NO_STATUS, 0}, {NO_STATUS, 0}},
+        2 // wisdom level
     }
 };

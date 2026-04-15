@@ -55,6 +55,35 @@ int calculate_defense(Armor a, int wisdom_level) {
     return (int)roundf(final_def);
 }
 
+int calculate_move_type_damage(Weapon w, int dmg_type_index, int wisdom_level, float strength_factor) {
+    // Check if weapon has this damage type
+    if (!(w.dmg_type & (1 << dmg_type_index))) {
+        return 0; // Weapon doesn't support this move type
+    }
+    
+    float wisdom_mult = 1.0f + (wisdom_level * 0.10f);
+    int type_damage = dmg_base_values[dmg_type_index];
+    float final_dmg = ((type_damage + w.base_damage) * wisdom_mult * strength_factor);
+    
+    return (int)roundf(final_dmg);
+}
+
+int get_available_move_types(Weapon w, int* out_types_indices, int max_count) {
+    int count = 0;
+    for (int i = 0; i < 12 && count < max_count; i++) {
+        if (w.dmg_type & (1 << i)) {
+            out_types_indices[count++] = i;
+        }
+    }
+    return count;
+}
+
+// Function to calculate wisdom increase based on damage dealt
+int calculate_wisdom_increase(int damage_dealt) {
+    // Example: Gain 1 wisdom point for every 15 damage dealt
+    return damage_dealt / 15;
+}
+
 // Initial sets of the weapons
 Weapon weapon_bare_hands(void) {
     Weapon w; memset(&w, 0, sizeof(w));
@@ -192,6 +221,7 @@ Weapon get_evolved_weapon(int slot_id, int wisdom_level) {
         case 3: return (wisdom_level >= 6) ? weapon_hanuman_gada() : weapon_gada();
         case 4: return (wisdom_level >= 5) ? weapon_gandiv() : weapon_bow();
         case 5: return (wisdom_level >= 3) ? weapon_amaterasu_beast() : weapon_fiery_sword();
+        case 6: return (wisdom_level >= 3) ? weapon_dagger_of_peleus() : weapon_shadow_dagger();
         default: return weapon_bare_hands();
     }
 }
