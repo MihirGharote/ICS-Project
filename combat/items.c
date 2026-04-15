@@ -1,3 +1,16 @@
+#if defined(__has_include)
+#  if __has_include(<ncurses.h>)
+#    include <ncurses.h>
+#  elif __has_include(<curses.h>)
+#    include <curses.h>
+#  else
+#    include <stdio.h>
+#    define printw printf
+#    define refresh() ((void)0)
+#  endif
+#else
+#  include <ncurses.h>
+#endif
 #include <string.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -256,7 +269,10 @@ void cure_poison(StatusEffect active_effects[]) {
             cured = 1;
         }
     }
-    if (cured) printf("Antidote used! The poison is gone.\n");
+    if (cured) {
+        printw("Antidote used! The poison is gone.\n");
+        refresh();
+    }
 }
 
 void use_item(Item *it, Stats *player_stats, StatusEffect player_afflictions[]) {

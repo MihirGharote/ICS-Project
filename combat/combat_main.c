@@ -1,4 +1,20 @@
-#include <stdio.h>
+#if defined(__has_include)
+#  if __has_include(<ncurses.h>)
+#    include <ncurses.h>
+#    define COMBAT_USE_CURSES 1
+#  elif __has_include(<curses.h>)
+#    include <curses.h>
+#    define COMBAT_USE_CURSES 1
+#  else
+#    include <stdio.h>
+#    define printw printf
+#    define scanw scanf
+#    define refresh() ((void)0)
+#  endif
+#else
+#  include <ncurses.h>
+#  define COMBAT_USE_CURSES 1
+#endif
 #include <stdlib.h>
 #include <time.h>
 #include "./enemies.h"
@@ -22,8 +38,9 @@ void handle_status_ticks(Stats *target_stats, StatusEffect active_effects[]) {
         if (active_effects[i].status & POISON) {
             target_stats->hp -= active_effects[i].severity; 
             if (target_stats->hp < 0) target_stats->hp = 0;
-            printf("Poison tick! Target takes %d damage. Current HP: %d\n", 
+            printw("Poison tick! Target takes %d damage. Current HP: %d\n", 
                     active_effects[i].severity, target_stats->hp);
+            refresh();
         }
     }
 }
@@ -54,7 +71,8 @@ void executeMove(Move move, Stats *attacker_stats, Stats *target_stats, StatusEf
         // Simple damage application, assuming no defense for now
         target_stats->hp -= damage;
         if (target_stats->hp < 0) target_stats->hp = 0;
-        printf("Dealt %d damage!\n", damage);
+        printw("Dealt %d damage!\n", damage);
+        refresh();
     }
 
     // Apply status effects
@@ -72,40 +90,57 @@ void executeMove(Move move, Stats *attacker_stats, Stats *target_stats, StatusEf
 }
 
 void startCombat(Player *player, Enemy *enemy) {
-    printf("Combat starts! %s vs %s\n", player->name, enemy->name);
+    printw("Combat starts! %s vs %s\n", player->name, enemy->name);
+    refresh();
     srand(time(NULL));
 
     while (player->stats.hp > 0 && enemy->stats.hp > 0) {
         // Player turn
-        printf("\nYour HP: %d/%d\n", player->stats.hp, player->stats.max_hp);
-        printf("Enemy HP: %d/%d\n", enemy->stats.hp, enemy->stats.max_hp);
-        printf("Choose your move (0-%d): ", player->noOfMoves - 1);
+        printw("\nYour HP: %d/%d\n", player->stats.hp, player->stats.max_hp);
+        printw("Enemy HP: %d/%d\n", enemy->stats.hp, enemy->stats.max_hp);
+        printw("Choose your move (0-%d): ", player->noOfMoves - 1);
+        refresh();
         int choice;
-        scanf("%d", &choice); // this needs to change to hatever function which will be used for choices
+        scanw("%d", &choice); // this needs to change to whatever function will be used for choices
         if (choice < 0 || choice >= player->noOfMoves) {
-            printf("Invalid choice.\n");
+            printw("Invalid choice.\n");
+            refresh();
             continue;
         }
         executeMove(player->moves[choice], &player->stats, &enemy->stats, enemy->afflictions);
         handle_status_ticks(&enemy->stats, enemy->afflictions);
         if (enemy->stats.hp <= 0) {
-            printf("You win!\n");
+            printw("You win!\n");
+            refresh();
             break;
         }
 
         // Enemy turn
         int enemy_move = rand() % enemy->noOfMoves;
-        printf("\n%s uses move %d\n", enemy->name, enemy_move);
+        printw("\n%s uses move %d\n", enemy->name, enemy_move);
+        refresh();
         executeMove(enemy->moves[enemy_move], &enemy->stats, &player->stats, player->afflictions);
         handle_status_ticks(&player->stats, player->afflictions);
         if (player->stats.hp <= 0) {
-            printf("You lose!\n");
+            printw("You lose!\n");
+            refresh();
             break;
         }
     }
 }
 
 int main() {
+#ifdef COMBAT_USE_CURSES
+    initscr();
+    cbreak();
+    noecho();
+    keypad(stdscr, TRUE);
+#endif
+
     runCombat();
+
+#ifdef COMBAT_USE_CURSES
+    endwin();
+#endif
     return 0;
 }
