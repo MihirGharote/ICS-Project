@@ -20,9 +20,7 @@
 #include <string.h>
 #include "./enemies.h"
 #include "./items.h"
-#include "./player.h"
-#include "./combat.h"
-#include "./combat_interface.h"
+#include "./enemies.h"
 
 extern int dmg_base_values[];
 
@@ -194,6 +192,7 @@ char* execute_enemy_choice_move(Enemy *enemy, Player *player, int move_type_inde
 }
 
 char* startCombat(Player *player, Enemy *enemy) {
+    initialize_enemy_weapons();  // Ensure enemy weapons are initialized
     static char combat_log[4096];
     strcpy(combat_log, "Combat starts! ");
     strcat(combat_log, player->name);

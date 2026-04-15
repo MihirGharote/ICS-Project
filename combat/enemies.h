@@ -15,5 +15,6 @@ typedef struct {
 
 int getEnemyDamage(Enemy enemy, unsigned short move);
 
+void initialize_enemy_weapons();
 
 extern Enemy enemies[4];
