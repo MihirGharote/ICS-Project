@@ -3,17 +3,17 @@
 #include "./combatAbstracts/moves.h"
 #include "./combatAbstracts/stats.h"
 #include "./items.h"
+#include "./enemies.h"
 
 typedef struct {
     char name[64];
-    char desc[256];
     Stats stats;
     unsigned short noOfMoves;
     Move moves[4];
-    StatusEffect afflictions[4]; // Current Status Effects
-} Enemy;
+    StatusEffect afflictions[4];
+    Item inventory[10]; // Simple inventory
+    int inventory_count;
+} Player;
 
-int getEnemyDamage(Enemy enemy, unsigned short move);
-
-
-extern Enemy enemies[1];
+Player createPlayer();
+void runCombat();
