@@ -16,4 +16,4 @@ typedef struct {
 int getEnemyDamage(Enemy enemy, unsigned short move);
 
 
-extern Enemy enemies[1];
+extern Enemy enemies[4];
