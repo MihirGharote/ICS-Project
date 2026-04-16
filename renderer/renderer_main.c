@@ -1,10 +1,9 @@
+#include "./renderWindows.h"
 #include <ncurses.h>
 
-int main() {
-    initscr();
-    printw("Hello ncurses!");
-    refresh();
+int renderer_main() {
+    initncurses();
+    initWindows();
     getch();
-    endwin();
     return 0;
 }

@@ -1,26 +1,9 @@
-#if defined(__has_include)
-#  if __has_include(<ncurses.h>)
-#    include <ncurses.h>
-#    define COMBAT_USE_CURSES 1
-#  elif __has_include(<curses.h>)
-#    include <curses.h>
-#    define COMBAT_USE_CURSES 1
-#  else
-#    include <stdio.h>
-#    define printw printf
-#    define scanw scanf
-#    define refresh() ((void)0)
-#  endif
-#else
-#  include <ncurses.h>
-#  define COMBAT_USE_CURSES 1
-#endif
 #include <stdlib.h>
 #include <time.h>
 #include <string.h>
 #include "./enemies.h"
 #include "./items.h"
-#include "./enemies.h"
+#include "./player.h"
 
 extern int dmg_base_values[];
 
@@ -49,7 +32,7 @@ char* handle_status_ticks(Stats *target_stats, StatusEffect active_effects[]) {
     return status_msg;
 }
 
-void executeMove(Move move, Stats *attacker_stats, Stats *target_stats, StatusEffect target_afflictions[]) {
+int executeMove(Move move, Stats *attacker_stats, Stats *target_stats, StatusEffect target_afflictions[]) {
     // Apply stat changes to attacker
     for (int i = 0; i < 4; i++) {
         if (move.statChanges[i].statName != NO_STAT) {
@@ -75,8 +58,7 @@ void executeMove(Move move, Stats *attacker_stats, Stats *target_stats, StatusEf
         // Simple damage application, assuming no defense for now
         target_stats->hp -= damage;
         if (target_stats->hp < 0) target_stats->hp = 0;
-        printw("Dealt %d damage!\n", damage);
-        refresh();
+        return damage;
     }
 
     // Apply status effects
@@ -91,6 +73,7 @@ void executeMove(Move move, Stats *attacker_stats, Stats *target_stats, StatusEf
             }
         }
     }
+    return 0;
 }
 
 char* executeWeaponMove(Weapon weapon, int dmg_type_index, Stats *attacker_stats, Stats *target_stats, StatusEffect target_afflictions[], int attacker_wisdom) {
@@ -276,17 +259,6 @@ char* startCombat(Player *player, Enemy *enemy) {
 }
 
 int main() {
-#ifdef COMBAT_USE_CURSES
-    initscr();
-    cbreak();
-    noecho();
-    keypad(stdscr, TRUE);
-#endif
-
     runCombat();
-
-#ifdef COMBAT_USE_CURSES
-    endwin();
-#endif
     return 0;
 }
