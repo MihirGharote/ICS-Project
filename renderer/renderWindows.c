@@ -47,14 +47,7 @@ void initWindows() {
 
     box(choicewin, 0, 0);
     keypad(choicewin, TRUE);
-    /* mvwaddstr(mainwin, 3, 2, "You wake to the sound of water.");
-    mvwaddstr(mainwin, 5, 2, "Your body aches everywhere. When your eyes open,
-    gray stone and moss blur into focus"); mvwaddstr(mainwin, 6, 2, "above you:
-    you're at the bottom of a ravine. There's blood on your hands, but you");
-    mvwaddstr(mainwin, 7, 2, "can't remember whose. You can't remember anything:
-    your name, your face, how "); mvwaddstr(mainwin, 8, 2, "you got here. All
-    you know is that you're supposed to be dead."); mvwaddstr(mainwin, 10, 2,
-    "But you're not."); */
+
     refreshLevel();
 
     wrefresh(mainwin);

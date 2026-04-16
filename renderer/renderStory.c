@@ -3,10 +3,12 @@
 #include "../globals.h"
 #include "../story2/printline.h"
 #include <assert.h>
-#include <ctype.h>
+#include <string.h>
 #include <ncurses.h>
 
-static void _render(char *file);
+#define INITIALX 2
+
+static void _render(char *file, int delay);
 
 void renderStory(int context) {
     werase(mainwin);
@@ -23,10 +25,10 @@ void renderStory(int context) {
     wattroff(choicewin, A_HEADER);
     switch (context) {
     case 0:
-        _render("./story2/firstline.txt");
+        _render("./story2/firstline.txt", 25);
         break;
     case 1:
-        _render("./choice_handling/naga_intro.txt");
+        _render("./choice_handling/naga_intro.txt", 25);
         break;
     default:
         break;
@@ -40,48 +42,55 @@ void nextChoice() {
     get_menu_choice(choicewin, opt, 1);
 }
 
-static void _render(char *file) {
-    const char *s = read_file_to_string(file);
-    int wcols;
+static void _render(char *file, int delay) {
+    char *s = read_file_to_string(file);
+
+    int wcols; wcols = getmaxx(mainwin);
     int y, x;
-    wcols = getmaxx(mainwin);
-    wmove(mainwin, 1, 2);
+    int width = wcols - 4;
+    int filled = 0;
+
+    wmove(mainwin, 2, INITIALX);
     while (*s) {
         getyx(mainwin, y, x);
-        int space = wcols - x - 7;
-        if (space <= 0) {
-            if (y + 1 >= getmaxy(mainwin))
-                return;
-            wmove(mainwin, y + 1, 2);
+        char *sp = strchr(s, ' ');
+        if (!sp) sp = s + strlen(s);
+        if (sp - s != 0 && *s != '\n') {
+            if (sp - s <= width - filled) {
+                while (sp - s != 0 && *s != '\n') {
+                    filled++;
+                    waddch(mainwin, *s);
+                    s++;
+                    napms(delay);
+                    wrefresh(mainwin);
+                    refresh();
+                }
+            } else {
+                filled = 0;
+                wmove(mainwin, y + 1, INITIALX);
+                while (sp - s != 0) {
+                    filled++;
+                    waddch(mainwin, *s);
+                    s++;
+                    napms(delay);
+                    wrefresh(mainwin);
+                    refresh();
+                }
+            }
             continue;
+        } else {
+            if (*s == '\n' || filled >= width) {
+                filled = 0;
+                wmove(mainwin, y + 1, INITIALX);
+                s++;
+            } else {
+                filled++;
+                waddch(mainwin, *s);
+                napms(delay);
+                wrefresh(mainwin);
+                refresh();
+                s++;
+            }
         }
-        if (*s == '\n') {
-            wmove(mainwin, y + 1, 2);
-            s++;
-            continue;
-        }
-
-        int avail = 0;
-        while (s[avail] && s[avail] != '\n' &&
-               !iscntrl((unsigned char)s[avail]) && avail < space)
-            avail++;
-        if (s[avail] == '\0' || s[avail] == '\n') {
-            waddnstr(mainwin, s, avail);
-            wrefresh(mainwin);
-            refresh();
-            napms(1000);
-            s += avail;
-            continue;
-        }
-
-        int br = avail;
-        while (br > 0 && !isspace((unsigned char)s[br]))
-            br--;
-        if (br == 0)
-            br = avail;
-        waddnstr(mainwin, s, br);
-        s += br;
-        while (*s && isspace((unsigned char)*s) && *s != ' ')
-            s++;
     }
 }
