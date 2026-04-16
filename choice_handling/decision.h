@@ -1,3 +1,5 @@
+#include <ncurses.h>
+
 #ifndef DECISIONS_H
 #define DECISIONS_H
 
@@ -10,7 +12,7 @@ typedef struct {
 } Outcome;
 
 
-int get_menu_choice(char *options[], int count);
+int get_menu_choice(WINDOW *menu_win, char *options[], int count);
 
 
 Outcome handle_encounter_1(int choice); // Naga 
