@@ -16,4 +16,4 @@ typedef struct {
 } Player;
 
 Player createPlayer();
-void runCombat();
+char *runCombat(void);

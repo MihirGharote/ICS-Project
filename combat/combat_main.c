@@ -258,7 +258,9 @@ char* startCombat(Player *player, Enemy *enemy) {
     return combat_log;
 }
 
+#ifdef RUNCOMBAT
 int main() {
-    runCombat();
+    printf("%s", runCombat());
     return 0;
 }
+#endif

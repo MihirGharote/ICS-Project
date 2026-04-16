@@ -1,3 +1,4 @@
+/*
 #include <string.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -44,3 +45,4 @@ Weapon weapon_thunderous_cyclone(void) {
     w.dmg_type = DMG_LIGHTNING | DMG_SLASH | DMG_SHOOT;
     return w;
 }
+*/

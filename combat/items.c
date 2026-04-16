@@ -1,19 +1,6 @@
-#if defined(__has_include)
-#  if __has_include(<ncurses.h>)
-#    include <ncurses.h>
-#  elif __has_include(<curses.h>)
-#    include <curses.h>
-#  else
-#    include <stdio.h>
-#    define printw printf
-#    define refresh() ((void)0)
-#  endif
-#else
-#  include <ncurses.h>
-#endif
+#include <stdbool.h>
 #include <string.h>
 #include <stdio.h>
-#include <stdlib.h>
 #include <math.h>
 #include "./items.h"
 
@@ -332,19 +319,17 @@ Item item_antidote(void) {
     return it;
 }
 
-void cure_poison(StatusEffect active_effects[]) {
-    int cured = 0;
+bool cure_poison(StatusEffect active_effects[]) {
+    // Returns whether it cured poison or not
+    bool cured = false;
     for (int i = 0; i < 4; i++) {
         if (active_effects[i].status & POISON) {
             active_effects[i].status = NO_STATUS;
             active_effects[i].severity = 0;
-            cured = 1;
+            cured = true;
         }
     }
-    if (cured) {
-        printw("Antidote used! The poison is gone.\n");
-        refresh();
-    }
+    return cured;
 }
 
 void use_item(Item *it, Stats *player_stats, StatusEffect player_afflictions[]) {
