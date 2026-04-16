@@ -14,5 +14,4 @@ char* handle_status_ticks(Stats *target_stats, StatusEffect active_effects[]);
 void executeMove(Move move, Stats *attacker_stats, Stats *target_stats, StatusEffect target_afflictions[]);
 char* executeWeaponMove(Weapon weapon, int dmg_type_index, Stats *attacker_stats, Stats *target_stats, StatusEffect target_afflictions[], int attacker_wisdom);
 char* startCombat(Player *player, Enemy *enemy);
-// Start combat and return the full combat log as a string
 char* startCombat(Player *player, Enemy *enemy);

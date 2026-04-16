@@ -24,11 +24,11 @@ Player createPlayer(int weapon_slot) {
     Player player = {
         "Hero",
         {5, 4, 6, 100, 100}, 
-        get_evolved_weapon(weapon_slot, 1), // wisdom_level=1
+        get_evolved_weapon(weapon_slot, 1), // wisdom_level=1 (intiially)
         { {NO_STATUS, 0}, {NO_STATUS, 0}, {NO_STATUS, 0}, {NO_STATUS, 0} },
         {item_antidote()}, // inventory
-        1, // inventory count
-        1 // wisdom level (starts at 1)
+        1, 
+        1 
     };
     return player;
 }
