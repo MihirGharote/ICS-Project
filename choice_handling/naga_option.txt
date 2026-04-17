@@ -1,6 +1,4 @@
-3
-Raise Shield (Defensive Maneuver)
-Draw Blade (Enter Combat)
-Use Fiery Sword (Environment Trick)
+1] Play a minigame
+2] Combat
 
                 

@@ -3,7 +3,7 @@
 #include "printline.h"
 
 
-void printline(char *filename[]){
+void printline(char *filename){
     FILE*instream;
     instream=fopen(filename,"r");
     if(instream==NULL){

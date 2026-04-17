@@ -1,3 +1,16 @@
+#if defined(__has_include)
+#  if __has_include(<ncurses.h>)
+#    include <ncurses.h>
+#  elif __has_include(<curses.h>)
+#    include <curses.h>
+#  else
+#    include <stdio.h>
+#    define printw printf
+#    define refresh() ((void)0)
+#  endif
+#else
+#  include <ncurses.h>
+#endif
 #include <string.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -26,7 +39,7 @@ int calculate_weapon_damage(Weapon w, int wisdom_level, float strength_factor) {
     int total_from_types = 0;
     float wisdom_mult = 1.0f + (wisdom_level * 0.10f); 
 
-    for (int i = 0; i < 11; i++) {
+    for (int i = 0; i < 12; i++) {
         if (w.dmg_type & (1 << i)) {
             total_from_types += dmg_base_values[i];
         }
@@ -40,6 +53,35 @@ int calculate_defense(Armor a, int wisdom_level) {
     float wisdom_def_bonus = 1.0f + (wisdom_level * 0.05f);
     float final_def = (a.defense_value * wisdom_def_bonus);
     return (int)roundf(final_def);
+}
+
+int calculate_move_type_damage(Weapon w, int dmg_type_index, int wisdom_level, float strength_factor) {
+    // Check if weapon has this damage type
+    if (!(w.dmg_type & (1 << dmg_type_index))) {
+        return 0; // Weapon doesn't support this move type
+    }
+    
+    float wisdom_mult = 1.0f + (wisdom_level * 0.10f);
+    int type_damage = dmg_base_values[dmg_type_index];
+    float final_dmg = ((type_damage + w.base_damage) * wisdom_mult * strength_factor);
+    
+    return (int)roundf(final_dmg);
+}
+
+int get_available_move_types(Weapon w, int* out_types_indices, int max_count) {
+    int count = 0;
+    for (int i = 0; i < 12 && count < max_count; i++) {
+        if (w.dmg_type & (1 << i)) {
+            out_types_indices[count++] = i;
+        }
+    }
+    return count;
+}
+
+// Function to calculate wisdom increase based on damage dealt
+int calculate_wisdom_increase(int damage_dealt) {
+    // Example: Gain 1 wisdom point for every 15 damage dealt
+    return damage_dealt / 15;
 }
 
 // Initial sets of the weapons
@@ -179,6 +221,7 @@ Weapon get_evolved_weapon(int slot_id, int wisdom_level) {
         case 3: return (wisdom_level >= 6) ? weapon_hanuman_gada() : weapon_gada();
         case 4: return (wisdom_level >= 5) ? weapon_gandiv() : weapon_bow();
         case 5: return (wisdom_level >= 3) ? weapon_amaterasu_beast() : weapon_fiery_sword();
+        case 6: return (wisdom_level >= 3) ? weapon_dagger_of_peleus() : weapon_shadow_dagger();
         default: return weapon_bare_hands();
     }
 }
@@ -204,6 +247,48 @@ Armor armor_aegis(void) {
     strncpy(a.desc, "Look upon me and FALTER!!", MAX_ITEM_DESC - 1);
     a.defense_value = 50;
     return a;
+}
+
+// Enemy Weapons - one per enemy, no transformations
+
+// Goblin: Iron Fist - high physical defense, whacking damage
+Weapon weapon_iron_fist(void) {
+    Weapon w; memset(&w, 0, sizeof(w));
+    strncpy(w.name, "Iron Fist", MAX_ITEM_NAME - 1);
+    strncpy(w.desc, "A metallic punch that doubles defense when used!", MAX_ITEM_DESC - 1);
+    w.base_damage = 12;
+    w.dmg_type = DMG_WHACKING | DMG_PUNCH;
+    return w;
+}
+
+// Granite Naga: Petrifying Slam - combines petrifying gaze and earthquake slam
+Weapon weapon_petrifying_slam(void) {
+    Weapon w; memset(&w, 0, sizeof(w));
+    strncpy(w.name, "Petrifying Slam", MAX_ITEM_NAME - 1);
+    strncpy(w.desc, "A stone-turning, ground-shaking strike that stuns and poisons!", MAX_ITEM_DESC - 1);
+    w.base_damage = 18;
+    w.dmg_type = DMG_WHACKING | DMG_POISON | DMG_SLASH;
+    return w;
+}
+
+// Willow Wisp: Dazzling Thief - combines dazzling flash and will-o'-the-thief
+Weapon weapon_dazzling_thief(void) {
+    Weapon w; memset(&w, 0, sizeof(w));
+    strncpy(w.name, "Dazzling Thief", MAX_ITEM_NAME - 1);
+    strncpy(w.desc, "A blinding, sneaky attack that disorients and drains!", MAX_ITEM_DESC - 1);
+    w.base_damage = 10;
+    w.dmg_type = DMG_LIGHTNING | DMG_STAB | DMG_THROW;
+    return w;
+}
+
+// Storm-Winged Gryphon: Thunderous Cyclone - combines thunderous screech and cyclone shield
+Weapon weapon_thunderous_cyclone(void) {
+    Weapon w; memset(&w, 0, sizeof(w));
+    strncpy(w.name, "Thunderous Cyclone", MAX_ITEM_NAME - 1);
+    strncpy(w.desc, "A deafening, swirling storm that shocks and reflects!", MAX_ITEM_DESC - 1);
+    w.base_damage = 15;
+    w.dmg_type = DMG_LIGHTNING | DMG_SLASH | DMG_SHOOT;
+    return w;
 }
 
 // --- ITEM WRAPPERS ---
@@ -240,8 +325,38 @@ Item item_health_potion(int heal_amount) {
 
 Item item_antidote(void) {
     Item it; memset(&it, 0, sizeof(it));
-    strncpy(it.name, "Antidote", 47);
+    strncpy(it.name, "Antidote", MAX_ITEM_NAME - 1);
+    strncpy(it.desc, "A bitter brew that purges toxins.", MAX_ITEM_DESC - 1);
     it.type = ITEM_CONSUMABLE;
-    it.data.consumable.cure_poison = 1;
+    it.data.consumable.cure_poison = 1; // Flag to be checked in use_item
     return it;
 }
+
+void cure_poison(StatusEffect active_effects[]) {
+    int cured = 0;
+    for (int i = 0; i < 4; i++) {
+        if (active_effects[i].status & POISON) {
+            active_effects[i].status = NO_STATUS;
+            active_effects[i].severity = 0;
+            cured = 1;
+        }
+    }
+    if (cured) {
+        printw("Antidote used! The poison is gone.\n");
+        refresh();
+    }
+}
+
+void use_item(Item *it, Stats *player_stats, StatusEffect player_afflictions[]) {
+    if (it->type != ITEM_CONSUMABLE) return;
+
+    if (it->data.consumable.heal_hp > 0) {
+        player_stats->hp += it->data.consumable.heal_hp;
+        if (player_stats->hp > player_stats->max_hp) 
+            player_stats->hp = player_stats->max_hp;
+    }
+    if (it->data.consumable.cure_poison) {
+        cure_poison(player_afflictions);
+    }
+}
+

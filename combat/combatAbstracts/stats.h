@@ -6,6 +6,8 @@ typedef struct {
     short atck;
     short defn;
     short aglt;
+    int hp;
+    int max_hp;
 } Stats;
 
 typedef struct {

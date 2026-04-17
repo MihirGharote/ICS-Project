@@ -2,6 +2,8 @@
 #define ITEMS_H
 
 #include <stdio.h>
+#include "./combatAbstracts/stats.h"
+#include "./combatAbstracts/status.h"
 
 #define MAX_ITEM_NAME    48
 #define MAX_ITEM_DESC    128
@@ -77,6 +79,9 @@ extern int dmg_base_values[];
 // Logic funcns for combat and defence
 int calculate_weapon_damage(Weapon w, int wisdom_level, float strength_factor);
 int calculate_defense(Armor a, int wisdom_level);
+int calculate_move_type_damage(Weapon w, int dmg_type_index, int wisdom_level, float strength_factor);
+int get_available_move_types(Weapon w, int* out_types_indices, int max_count);
+int calculate_wisdom_increase(int damage_dealt);
 
 // Evokution of the weapons based on wisdom level
 Weapon get_evolved_weapon(int slot_id, int wisdom_level);
@@ -99,6 +104,12 @@ Weapon weapon_hanuman_gada(void);  // gada
 Weapon weapon_gandiv(void);  // bow
 Weapon weapon_amaterasu_beast(void);  //fiery sword
 
+// Enemy Weapons
+Weapon weapon_iron_fist(void);
+Weapon weapon_petrifying_slam(void);
+Weapon weapon_dazzling_thief(void);
+Weapon weapon_thunderous_cyclone(void);
+
 // Shield
 Armor armor_basic_shield(void);
 Armor armor_aegis(void); // upgraded shield
@@ -108,5 +119,7 @@ Item item_from_weapon(Weapon w, int gold_value);
 Item item_from_armor(Armor a, int gold_value);
 Item item_health_potion(int heal_amount);
 Item item_antidote(void);
+void use_item(Item *it, Stats *player_stats, StatusEffect player_afflictions[]);
+void cure_poison(StatusEffect active_effects[]);
 
 #endif

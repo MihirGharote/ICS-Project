@@ -1,4 +1,2 @@
-3
-Try to Swat (Physical Strike)
-Analyze Pattern (Start Minigame)
-Call Lightning (Legendary Weapon)
+1] Play a minigame
+2] Combat
