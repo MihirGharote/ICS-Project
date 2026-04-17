@@ -1,0 +1,5 @@
+# Ignore compiled C binaries
+generator
+ascii_art_demo
+*.o
+.DS_Store
