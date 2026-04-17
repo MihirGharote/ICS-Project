@@ -1,7 +1,3 @@
 Qualities: Immense strength, slow-acting venom, patient hunter.
-
-Powers: [Petrifying Gaze] (turns limbs to stone) and [Earthquake Slam] (stuns the player).
-
-"The ground trembles as the Granite Naga uncoils from around a temple pillar. It speaks in a voice like grinding stones: 'Only the worthy may pass the threshold of the mountain.'"
-
-Choice: [Combat: Tactical Strike] or [Minigame: Ancient Rune Puzzle]
+Powers: [Petrifying Gaze] (turns limbs to stone) and [Earthquake Slam] (stuns the player)
+The ground trembles as the Granite Naga uncoils from around a temple pillar. It speaks in a voice like grinding stones: 'Only the worthy may pass the threshold of the mountain.'
