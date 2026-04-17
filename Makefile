@@ -12,7 +12,7 @@ SRCS := $(foreach d,$(SRCDIRS),$(wildcard $(d)/*.c))
 
 .PHONY: clean run
 
-$(TARGET): $(SRCS) story2/printline.c
+$(TARGET): $(SRCS) minigames/minigames.c story2/printline.c
 	$(CC) $(CFLAGS) $^ -o $@ $(LIBS)
 
 clean:
