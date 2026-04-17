@@ -4,6 +4,7 @@
 #include <stdio.h>
 
 extern int level;
+extern const int maxlevels;
 extern unsigned int wisdom;
 extern unsigned int maxhp;
 extern unsigned int hp;
