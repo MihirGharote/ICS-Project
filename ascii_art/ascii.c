@@ -2,14 +2,6 @@
 #include <stdlib.h>
 #include <string.h>
 
-/**
- * Reads an ASCII art text file into a 2D char array.
- * 
- * @param filename The path to the text file
- * @param width Pointer to store the max width of the art
- * @param height Pointer to store the height (number of lines)
- * @return Dynamically allocated 2D char array containing the art
- */
 char **getAsciiArt(char *filename, int *width, int *height) {
     FILE *file = fopen(filename, "r");
     if (!file) {
@@ -91,6 +83,13 @@ char **getAsciiArt(char *filename, int *width, int *height) {
 
     fclose(file);
     return art;
+}
+
+void freeAsciiArt(char **art, int width, int height) {
+    for (int i = 0; i < height; i++) {
+        free(art[i]);
+    }
+    free(art);
 }
 
 #ifdef TESTASCII
