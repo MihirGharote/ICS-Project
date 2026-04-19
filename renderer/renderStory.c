@@ -11,7 +11,7 @@
 
 #define INITIALX 3
 #define PADDING 4
-#define DELAY 1
+#define DELAY 10
 
 static void _render(char *s, int delay, int init_y, int offset);
 static void _renderFile(char *file, int delay);
@@ -52,10 +52,11 @@ void renderStory(int context) {
         _renderEvent("storm_winged_gryphon");
         break;
     case 6:
-        _renderFile("story2/victory_end.txt", 10); // TODO: victory_end.txt
+        renderResult("story2/victory_end.txt"); // TODO: victory_end.txt
         break;
     case 7:
-        _renderFile("story2/game_over.txt", 10); // TODO: game_over.txt
+        player.stats.hp = 1; // Hack so renderResult doesn't immediately return
+        renderResult("story2/game_over.txt"); // TODO: game_over.txt
         break;
     default:
         break;
@@ -65,7 +66,7 @@ void renderStory(int context) {
 }
 
 void nextChoice() {
-    char *opt[1] = {"Next"};
+    static char *opt[1] = {"Next"};
     get_menu_choice(choicewin, opt, 1);
 }
 
@@ -165,6 +166,19 @@ static void _renderEvent(char *event) {
     napms(500);
 
     _render(behavior, 2*DELAY, 0, artWidth);
+}
+
+void renderResult(char *result) {
+    if (player.stats.hp <= 0) return;
+    werase(mainwin);
+    box(mainwin, 0, 0);
+
+    wattron(mainwin, A_HEADER);
+    mvwprintw(mainwin, 0, 2, " Story ");
+    wattroff(mainwin, A_HEADER);
+    _renderTitle("Result", COLOR_GREEN);
+    _renderFile(result, DELAY);
+    nextChoice();
 }
 
 static void delay_addstr(char *str, int delay) {

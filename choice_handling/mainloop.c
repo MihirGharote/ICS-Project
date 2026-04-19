@@ -24,18 +24,18 @@ static void execute_level() {
         case 1: // GOBLIN
             villain = enemies[0];
             villain.equipped_weapon = weapon_iron_fist();
-            //strcpy(result, "story2/goblin_result.txt");
+            strcpy(result, "./story2/goblin_result.txt");
             w1 = weapon_bare_hands();
             w2 = weapon_ancient_sword();
             menu_opts[0] = "Attack: Bare Hands";
             menu_opts[1] = "Attack: Ancient Sword";
-            menu_opts[2] = "Strategy: Tower of Hanoi";
+            menu_opts[2] = "Strategy: Reaction Test";
             break;
 
         case 2: // NAGA
             villain = enemies[1];
             villain.equipped_weapon = weapon_petrifying_slam();
-            //strcpy(result, "story2/naga_result.txt");
+            strcpy(result, "./story2/naga_result.txt");
             w1 = weapon_mallet();
             w2 = weapon_fiery_sword();
             menu_opts[0] = "Attack: Wooden Mallet";
@@ -46,7 +46,7 @@ static void execute_level() {
         case 3: // WISP
             villain = enemies[2];
             villain.equipped_weapon = weapon_dazzling_thief();
-            //strcpy(result, "story2/wisp_result.txt");
+            strcpy(result, "./story2/wisp_result.txt");
             w1 = weapon_shadow_dagger();
             w2 = weapon_bow();
             menu_opts[0] = "Attack: Shadow Dagger";
@@ -57,7 +57,7 @@ static void execute_level() {
         case 4: // GRYPHON
             villain = enemies[3];
             villain.equipped_weapon = weapon_thunderous_cyclone();
-            //strcpy(result, "story2/gryphon_result.txt");
+            strcpy(result, "story2/gryphon_result.txt");
             w1 = player.equipped_weapon; // Best current weapon
             w2 = weapon_anduril();    // Legendary find
             menu_opts[0] = "Attack: Current Weapon";
@@ -86,7 +86,6 @@ static void execute_level() {
 
         if (success) {
             player.wisdom_level += 2; // Wisdom bonus for solving minigame
-            //display_story_part(result);
         } else {
             // Failure leads to immediate combat with basic weapon
             startCombat(&villain);
@@ -96,6 +95,7 @@ static void execute_level() {
     // 4. POST-ENCOUNTER UPDATES
     // Check if wisdom increased enough to evolve weapon
     player.equipped_weapon = get_evolved_weapon(level, player.wisdom_level);
+    renderResult(result);
 }
 
 
