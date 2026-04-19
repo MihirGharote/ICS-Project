@@ -1,13 +1,14 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
+#include "../globals.h"
 #include "./enemies.h"
 #include "./items.h"
 #include "./player.h"
 #include "./combat.h"
 
-Player createPlayer() {
-    Player player = {
+void createPlayer() {
+    player = (Player){
         "Hero",
         {5, 4, 6, 100, 100}, 
         get_evolved_weapon(0, 1), // wisdom_level=1 (intiially)
@@ -16,12 +17,4 @@ Player createPlayer() {
         1, 
         1 
     };
-    return player;
-}
-
-char *runCombat() {
-    Player player = createPlayer();
-    Enemy enemy = enemies[0];
-    enemy.equipped_weapon = weapon_gada(); // Initialize enemy weapon
-    return startCombat(&player, &enemy);
 }

@@ -26,6 +26,8 @@ void renderCombat(Enemy *enemy) {
 }
 
 static void renderBars(int enemyHP, int enemyMaxHP) {
+    int hp = player.stats.hp;
+    int maxhp = player.stats.max_hp;
     int barWidth = (getmaxx(mainwin) - 2 * PADDING - 2 * VALUELENGTH - INBETWEEN -
                    2 * LABELLENGTH - 2) / 2;
     

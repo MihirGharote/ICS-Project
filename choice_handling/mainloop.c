@@ -13,7 +13,7 @@
 
 //Logic for a single encounter
  
-static void execute_level(Player *hero) {
+static void execute_level() {
     Enemy villain;
     char result[64] = "TODO: Result";
     char *menu_opts[3] = {"", "", ""};
@@ -58,7 +58,7 @@ static void execute_level(Player *hero) {
             villain = enemies[3];
             villain.equipped_weapon = weapon_thunderous_cyclone();
             //strcpy(result, "story2/gryphon_result.txt");
-            w1 = hero->equipped_weapon; // Best current weapon
+            w1 = player.equipped_weapon; // Best current weapon
             w2 = weapon_anduril();    // Legendary find
             menu_opts[0] = "Attack: Current Weapon";
             menu_opts[1] = "Attack: Hero's Anduril";
@@ -72,13 +72,13 @@ static void execute_level(Player *hero) {
 
     // 3. EXECUTE CHOICE
     if (choice == 1) {
-        hero->equipped_weapon = w1;
+        player.equipped_weapon = w1;
         flash();
-        startCombat(hero, &villain);
+        startCombat(&villain);
     } 
     else if (choice == 2) {
-        hero->equipped_weapon = w2;
-        startCombat(hero, &villain);
+        player.equipped_weapon = w2;
+        startCombat(&villain);
     } 
     else if (choice == 3) {
         int success = 0;
@@ -87,35 +87,32 @@ static void execute_level(Player *hero) {
         else success = play_arithmetic();
 
         if (success) {
-            hero->wisdom_level += 2; // Wisdom bonus for solving minigame
+            player.wisdom_level += 2; // Wisdom bonus for solving minigame
             //display_story_part(result);
         } else {
             // Failure leads to immediate combat with basic weapon
-            startCombat(hero, &villain);
+            startCombat(&villain);
         }
     }
     
     // 4. POST-ENCOUNTER UPDATES
     // Check if wisdom increased enough to evolve weapon
-    hero->equipped_weapon = get_evolved_weapon(level, hero->wisdom_level);
+    player.equipped_weapon = get_evolved_weapon(level, player.wisdom_level);
 }
 
 
  //The Game Flow (Sequential Encounters)
 
-void start_mainloop() {
-    // Initial setup
-    Player hero = createPlayer();
-    
+void start_mainloop() {    
     // Encounter sequence 1 -> 4
     for (int i = 1; i <= 4; i++) {
         level = i;
         refreshLevel(); // Updates the UI window on the right
-        if (hero.stats.hp <= 0) break; // Game Over check
-        execute_level(&hero);
+        if (player.stats.hp <= 0) break; // Game Over check
+        execute_level();
     }
 
-    if (hero.stats.hp > 0) {
+    if (player.stats.hp > 0) {
         renderStory(6);
     } else {
         renderStory(7);

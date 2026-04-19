@@ -15,5 +15,4 @@ typedef struct {
     int wisdom_level; // For damage/defense calculations
 } Player;
 
-Player createPlayer();
-char *runCombat(void);
+void createPlayer();
