@@ -1,23 +1,5 @@
-========================================================================
-The air grows cold as a Neon Willow-Wisp circles you.
-It doesn't want your blood—it wants your memories.
-It dances just out of reach.
-========================================================================
-
-         *  .  *
-      *  \ | / *
-    .   - -(O)- -   .
-      *  / | \ *
-         *  .  *
-
-================= NEON WILLOW-WISP =====================================
- Qualities: Extremely fast, intangible (hard to hit), emits a calming aroma.
- Powers:    [Dazzling Flash] (blinds the opponent)
-            [Will-o'-the-Thief] (steals points)
-========================================================================
-
-What will you do?
-  [1] Combat: Magic Blast
-  [2] Minigame: Light-Speed Chase
-
-Choice: 
+     *  .  *
+  *  \ | / *
+.   - -(O)- -   .
+  *  / | \ *
+     *  .  *

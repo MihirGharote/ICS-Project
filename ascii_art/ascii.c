@@ -93,4 +93,14 @@ char **getAsciiArt(char *filename, int *width, int *height) {
     return art;
 }
 
-
+#ifdef TESTASCII
+int main() {
+    printf("Goblin\n");
+    int w, h;
+    char **goblin = getAsciiArt("goblin.txt", &w, &h);
+    for (int i = 0; i < h; i++) {
+        puts(goblin[i]);
+    }
+    free(goblin);
+}
+#endif

@@ -1,23 +1,5 @@
-========================================================================
-The Iron-Skinned Goblin sneers at you, blocking the exit.
-Its skin clangs like a bell when it moves.
-How will you proceed to earn your first Shard?
-========================================================================
-
     .-"-.
    | o_o |
   /[#####]\
   | [###] |
    \_/^\_/
-
-================= IRON-SKINNED GOBLIN ==================================
- Qualities: High physical defense, clumsy movement, obsessed with shiny objects.
- Powers:    [Metallic Hardening] (doubles defense)
-            [Iron Fist] 
-========================================================================
-
-What will you do?
-  [1] Combat: Sword Duel
-  [2] Minigame: Bribe with Jewels !!
-
-Choice: 

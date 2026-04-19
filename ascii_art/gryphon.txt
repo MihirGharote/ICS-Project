@@ -1,9 +1,3 @@
-========================================================================
-At the highest peak, the Storm-Winged Gryphon awaits.
-The sky turns black as it spreads its wings.
-This is the final guardian of your lost memory.
-========================================================================
-
              ___
             (o_o)
            (  V  )
@@ -16,15 +10,3 @@ This is the final guardian of your lost memory.
             / | \
            /  |  \
           /__/ \__\
-
-================= THE STORM-WINGED GRYPHON =============================
- Qualities: Prideful, master of the winds, lightning-fast reflexes.
- Powers:    [Thunderous Screech] (lowers attack power)
-            [Cyclone Shield]     (reflects projectiles)
-========================================================================
-
-What will you do?
-  [1] Combat: Aerial Battle
-  [2] Minigame: Sky-Rider Balance
-
-Choice: 
