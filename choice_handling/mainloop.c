@@ -81,9 +81,8 @@ static void execute_level() {
     } 
     else if (choice == 3) {
         int success = 0;
-        if (level == 1 || level == 4) success = play_hanoi();
-        else if (level == 2) success = play_reaction();
-        else success = play_arithmetic();
+        if (level == 1 || level == 2) success = play_reaction();
+        else if (level == 3 || level == 4) success = play_arithmetic();
 
         if (success) {
             player.wisdom_level += 2; // Wisdom bonus for solving minigame

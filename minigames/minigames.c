@@ -1,10 +1,6 @@
 #include "minigames.h"
 #include <stdio.h>
 
-int play_arithmetic() {
-    return 1;
-}
-
 int play_hanoi() {
     return 1;
     printf("Minigames!\n");

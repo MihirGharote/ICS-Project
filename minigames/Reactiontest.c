@@ -45,7 +45,7 @@ int play_reaction() {
     box(choicewin, 0, 0);
 
     wattron(mainwin, A_HEADER);
-    mvwprintw(mainwin, 0, 2, "Reaction Test");
+    mvwprintw(mainwin, 0, 2, " Reaction Test ");
     wattroff(mainwin, A_HEADER);
 
     wattron(choicewin, A_HEADER);

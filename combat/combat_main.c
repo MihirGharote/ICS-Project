@@ -1,3 +1,4 @@
+#include <ncurses.h>
 #include <stdlib.h>
 #include <time.h>
 #include <string.h>
@@ -116,7 +117,6 @@ char* executeWeaponMove(Weapon weapon, int dmg_type_index, Stats *attacker_stats
         strcat(message, weapon.name);
         strcat(message, "!");
     }
-    
     return message;
 }
 
@@ -179,7 +179,7 @@ char* execute_enemy_choice_move(Enemy *enemy, int move_type_index) {
 
 char* startCombat(Enemy *enemy) {
     initialize_enemy_weapons();  // Ensure enemy weapons are initialized
-    static char combat_log[4096];
+    static char combat_log[8192];
     strcpy(combat_log, "Combat starts! ");
     strcat(combat_log, player.name);
     strcat(combat_log, " vs ");
@@ -232,6 +232,7 @@ char* startCombat(Enemy *enemy) {
         free(moveNames);        
 
         char* player_msg = execute_player_choice_move(enemy, selected_move_type);
+        renderPlayerAttack(player_msg, enemy);
         strcat(combat_log, player_msg);
         strcat(combat_log, "\n");
         
@@ -257,6 +258,7 @@ char* startCombat(Enemy *enemy) {
             sprintf(move_str, "%s uses %s!\n", enemy->name, get_move_type_name(enemy_selected_move));
             strcat(combat_log, move_str);
             char* enemy_msg = execute_enemy_choice_move(enemy, enemy_selected_move);
+            renderEnemyAttack(enemy_msg, enemy);
             strcat(combat_log, enemy_msg);
             strcat(combat_log, "\n");
         }
@@ -270,7 +272,6 @@ char* startCombat(Enemy *enemy) {
             break;
         }
     }
-    
     return combat_log;
 }
 

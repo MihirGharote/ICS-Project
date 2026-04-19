@@ -1,11 +1,6 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <time.h>
 #include "../globals.h"
-#include "./enemies.h"
 #include "./items.h"
 #include "./player.h"
-#include "./combat.h"
 
 void createPlayer() {
     player = (Player){
