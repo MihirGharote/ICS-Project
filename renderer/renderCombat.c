@@ -1,4 +1,5 @@
 #include "renderCombat.h"
+#include "../combat/enemies.h"
 #include "../globals.h"
 #include <ncurses.h>
 
@@ -7,7 +8,9 @@
 #define LABELLENGTH 7 // The length of "HP" and "MANA"
 #define VALUELENGTH 9 // The length of "  xxx/100"
 
-void renderCombat() {
+static void renderBars(int enemyHP, int enemyMaxHP);
+
+void renderCombat(Enemy *enemy) {
     werase(mainwin);
     box(mainwin, 0, 0);
 
@@ -17,30 +20,32 @@ void renderCombat() {
     wattroff(mainwin, COLOR_PAIR(COLOR_RED));
     wattroff(mainwin, A_HEADER);
 
-    for (int i = 0; i <= 100; i++) {
-        hp = i;
-        renderBars(50, 50, 100, 100, 25, 25);
-        wrefresh(mainwin);
-        refresh();
-        napms(10);
-    }
+    renderBars(enemy->stats.hp, enemy->stats.max_hp);
     wrefresh(mainwin);
     refresh();
 }
 
-void renderBars(int mana, int maxMana, int enemyHP, int enemyMaxHP, int enemyMana, int enemyMaxMana) {
+static void renderBars(int enemyHP, int enemyMaxHP) {
     int barWidth = (getmaxx(mainwin) - 2 * PADDING - 2 * VALUELENGTH - INBETWEEN -
                    2 * LABELLENGTH - 2) / 2;
     
     // PLAYER
     mvwaddnstr(mainwin, 2, PADDING, "   HP ", LABELLENGTH);
+    wattron(mainwin, COLOR_PAIR(COLOR_GREEN));
+    if (((float)hp)/maxhp <= 0.5) {
+        wattron(mainwin, COLOR_PAIR(COLOR_YELLOW));
+    }
+    if (((float)hp)/maxhp <= 0.2) {
+        wattron(mainwin, COLOR_PAIR(COLOR_RED));
+    }
     for (int i = 0; i < barWidth; i++) {
-        if ( i <= (barWidth*hp) / maxhp ) {
+        if (i <= (barWidth*hp) / maxhp) {
             waddch(mainwin, ACS_BLOCK);
         } else {
             waddch(mainwin, ACS_CKBOARD);
         }
     }
+    wattrset(mainwin, A_NORMAL);
     wprintw(mainwin, "  %-3d/%-3d", hp, maxhp);
     for (int i = 0; i < INBETWEEN; i++) {
         waddch(mainwin, ' ');
@@ -48,12 +53,20 @@ void renderBars(int mana, int maxMana, int enemyHP, int enemyMaxHP, int enemyMan
 
     // ENEMY
     waddnstr(mainwin, "   HP ", LABELLENGTH);
+    wattron(mainwin, COLOR_PAIR(COLOR_GREEN));
+    if (((float)enemyHP)/enemyMaxHP <= 0.5) {
+        wattron(mainwin, COLOR_PAIR(COLOR_YELLOW));
+    }
+    if (((float)enemyHP)/enemyMaxHP <= 0.2) {
+        wattron(mainwin, COLOR_PAIR(COLOR_RED));
+    }
     for (int i = 0; i < barWidth; i++) {
-        if (0) {
+        if (i <= (barWidth*enemyHP) / enemyMaxHP) {
             waddch(mainwin, ACS_BLOCK);
         } else {
             waddch(mainwin, ACS_CKBOARD);
         }
     }
+    wattrset(mainwin, A_NORMAL);
     wprintw(mainwin, "  %-3d/%-3d", enemyHP, enemyMaxHP);
 }

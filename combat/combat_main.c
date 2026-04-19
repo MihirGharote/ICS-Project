@@ -4,6 +4,9 @@
 #include "./enemies.h"
 #include "./items.h"
 #include "./player.h"
+#include "../renderer/renderCombat.h"
+#include "../choice_handling/choice_system.h"
+#include "../globals.h"
 
 extern int dmg_base_values[];
 
@@ -190,6 +193,7 @@ char* startCombat(Player *player, Enemy *enemy) {
     srand(time(NULL));
 
     while (player->stats.hp > 0 && enemy->stats.hp > 0) {
+        renderCombat(enemy);
         // Player turn
         strcat(combat_log, "\n========== PLAYER TURN ==========\n");
         char hp_str[50];
@@ -203,18 +207,27 @@ char* startCombat(Player *player, Enemy *enemy) {
         
         // Get available move types
         int move_types[12];
-        int move_count = get_available_move_types(player->equipped_weapon, move_types, 12);
+        int move_count = get_player_available_moves(player, move_types, 12);
         
         if (move_count == 0) {
             strcat(combat_log, "No available moves!\n");
             break;
         }
-        
+
         // Choice handled by teammate's code
         // int selected_move_type = teammate_get_player_choice(move_types, move_count);
         // For now, default to first move
+        char **moveNames = (char **)malloc(12 * sizeof(char *));
+        for (int i = 0; i < move_count; i++) {
+            moveNames[i] = get_all_move_type_names()[move_types[i]];
+        }
+        #ifndef RUNCOMBAT
+        int selected_move_type = move_types[get_menu_choice(choicewin, moveNames, move_count)];
+        #else
         int selected_move_type = move_types[0];
-        
+        #endif
+        free(moveNames);        
+
         char* player_msg = execute_player_choice_move(player, enemy, selected_move_type);
         strcat(combat_log, player_msg);
         strcat(combat_log, "\n");

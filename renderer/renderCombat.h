@@ -1,4 +1,5 @@
 #pragma once
+#include "../combat/enemies.h"
 
-void renderCombat();
-void renderBars(int mana, int maxMana, int enemyHP, int enemyMaxHP, int enemyMana, int enemyMaxMana);
+
+void renderCombat(Enemy *enemy);

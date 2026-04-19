@@ -69,10 +69,11 @@ static void execute_level(Player *hero) {
     // 2. DISPLAY STORY & GET CHOICE
     renderStory(level);
     int choice = get_menu_choice(choicewin, menu_opts, 3);
-    return;
+
     // 3. EXECUTE CHOICE
     if (choice == 1) {
         hero->equipped_weapon = w1;
+        flash();
         startCombat(hero, &villain);
     } 
     else if (choice == 2) {
@@ -93,7 +94,7 @@ static void execute_level(Player *hero) {
             startCombat(hero, &villain);
         }
     }
-
+    
     // 4. POST-ENCOUNTER UPDATES
     // Check if wisdom increased enough to evolve weapon
     hero->equipped_weapon = get_evolved_weapon(level, hero->wisdom_level);

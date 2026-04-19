@@ -8,7 +8,7 @@
 #include <string.h>
 
 #define INITIALX 3
-#define DELAY 25
+#define DELAY 1
 
 static void _render(char *s, int delay, int init_y);
 static void _renderFile(char *file, int delay);
@@ -34,6 +34,7 @@ void renderStory(int context) {
     switch (context) {
     case 0:
         _renderTitle("Introduction", COLOR_GREEN);
+        napms(1000);
         _renderFile("./story2/firstline.txt", DELAY);
         break;
     case 1:
