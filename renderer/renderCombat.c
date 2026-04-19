@@ -14,8 +14,12 @@
 #define enemyCentre(bw, x)                                                     \
     (PADDING + 2 * LABELLENGTH + bw + VALUELENGTH + INBETWEEN + (bw - x) / 2)
 
-static int renderBars(int enemyHP, int enemyMaxHP);
+static int renderBars(int hp, int maxhp, int enemyHP, int enemyMaxHP);
 static void renderName(int barWidth, char *enemyName);
+
+static int barWidth;
+int prevhp = 200;
+int prevenemyhp = 200;
 
 void renderCombat(Enemy *enemy) {
     werase(mainwin);
@@ -27,7 +31,7 @@ void renderCombat(Enemy *enemy) {
     wattroff(mainwin, COLOR_PAIR(COLOR_RED));
     wattroff(mainwin, A_HEADER);
 
-    int barWidth = renderBars(enemy->stats.hp, enemy->stats.max_hp);
+    barWidth = renderBars(player.stats.hp, player.stats.max_hp, enemy->stats.hp, enemy->stats.max_hp);
     renderName(barWidth, enemy->name);
     
     int pArtHeight, pArtWidth, eArtHeight, eArtWidth;
@@ -57,9 +61,9 @@ void renderCombat(Enemy *enemy) {
     refresh();
 }
 
-static int renderBars(int enemyHP, int enemyMaxHP) {
-    int hp = player.stats.hp;
-    int maxhp = player.stats.max_hp;
+static int renderBars(int hp, int maxhp, int enemyHP, int enemyMaxHP) {
+    prevhp = hp;
+    prevenemyhp = enemyHP;
     int barWidth = (getmaxx(mainwin) - 2 * PADDING - 2 * VALUELENGTH -
                     INBETWEEN - 2 * LABELLENGTH - 2) /
                    2;
@@ -74,7 +78,7 @@ static int renderBars(int enemyHP, int enemyMaxHP) {
         wattron(mainwin, COLOR_PAIR(COLOR_RED));
     }
     for (int i = 0; i < barWidth; i++) {
-        if (i <= (barWidth * hp) / maxhp) {
+        if (i <= (barWidth * hp) / maxhp && hp > 0) {
             waddch(mainwin, ACS_BLOCK);
         } else {
             waddch(mainwin, ACS_CKBOARD);
@@ -96,7 +100,7 @@ static int renderBars(int enemyHP, int enemyMaxHP) {
         wattron(mainwin, COLOR_PAIR(COLOR_RED));
     }
     for (int i = 0; i < barWidth; i++) {
-        if (i <= (barWidth * enemyHP) / enemyMaxHP) {
+        if (i <= (barWidth * enemyHP) / enemyMaxHP && enemyHP > 0) {
             waddch(mainwin, ACS_BLOCK);
         } else {
             waddch(mainwin, ACS_CKBOARD);
@@ -124,4 +128,42 @@ void renderArt(int init_x, int init_y, char **art, int width,
     }
     wrefresh(mainwin);
     refresh();
+}
+
+void renderEnemyAttack(char *message, Enemy *enemy) {
+    size_t len = strlen(message);
+    mvwprintw(mainwin, (getmaxy(mainwin) - 2), enemyCentre(barWidth, len), "%s", message);
+    wrefresh(mainwin);
+    refresh();
+    int target = player.stats.hp;
+    target = target > 0 ? target : 0;
+    int delayTime = 500 / (prevhp - target + 1);
+    for (int i = prevhp; i >= target; i--) {
+        renderBars(i, player.stats.max_hp, enemy->stats.hp, enemy->stats.max_hp);
+        napms(delayTime);
+        wrefresh(mainwin);
+        refresh();
+    }
+    if (target == 0) {
+        napms(1500);
+    }
+}
+
+void renderPlayerAttack(char *message, Enemy *enemy) {
+    size_t len = strlen(message);
+    mvwprintw(mainwin, (getmaxy(mainwin) - 2), playerCentre(barWidth, len), "%s", message);
+    wrefresh(mainwin);
+    refresh();
+    int target = enemy->stats.hp;
+    target = target > 0 ? target : 0;
+    int delayTime = 500 / (prevenemyhp - target + 1);
+    for (int i = prevenemyhp; i >=target; i--) {
+        renderBars(player.stats.hp, player.stats.max_hp, i, enemy->stats.max_hp);
+        napms(delayTime);
+        wrefresh(mainwin);
+        refresh();
+    }
+    if (target == 0) {
+        napms(500);
+    }
 }

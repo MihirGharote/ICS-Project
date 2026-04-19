@@ -1,10 +1,10 @@
 CC = gcc
-CFLAGS = -pedantic -Wall -Wextra -Wconversion -Wsign-conversion 
+CFLAGS = -Wall -Wextra
 
 TARGET = main
 
 # INFO: To add new compile folders, add them below, separated by spaces
-SRCDIRS = . renderer choice_handling combat ascii_art
+SRCDIRS = . renderer choice_handling combat ascii_art minigames
 # INFO: Add additional libraries below, like -lm
 LIBS = -lncurses -lm
 
@@ -12,7 +12,7 @@ SRCS := $(foreach d,$(SRCDIRS),$(wildcard $(d)/*.c))
 
 .PHONY: clean run
 
-$(TARGET): $(SRCS) minigames/minigames.c minigames/Reactiontest.c story2/printline.c
+$(TARGET): $(SRCS) story2/printline.c
 	$(CC) $(CFLAGS) $^ -o $@ $(LIBS)
 
 clean:
