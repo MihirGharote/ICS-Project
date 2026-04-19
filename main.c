@@ -7,6 +7,7 @@
 
 int main() {
     initncurses();
+    logo();
     initWindows();
     createPlayer();
     renderStory(0);

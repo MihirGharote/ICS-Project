@@ -1,5 +1,6 @@
 #include "./renderWindows.h"
 #include "../globals.h"
+#include "../ascii_art/ascii.h"
 #include "./levelWindow.h"
 #include <assert.h>
 #include <ncurses.h>
@@ -14,6 +15,12 @@ void initncurses() {
     cbreak();
     curs_set(0);
 
+    if (LINES < 25 || COLS < 80) {
+        char error[64];
+        sprintf(error, "Current Resolution: %dx%d | Required: 80x25 or larger.", COLS, LINES);
+        _bomb(error);
+    }
+
     if (!has_colors()) {
         _bomb("Your terminal does not support colors\n");
     }
@@ -25,6 +32,26 @@ void initncurses() {
     for (short i = 0; i <= 7; i++) {
         init_pair(i, i, COLOR_BLACK);
     }
+}
+
+void logo() {
+    int w, h;
+    char **art = getAsciiArt("./ascii_art/logo.txt", &w, &h);
+    for (int i = 0; i < h; i++) {
+        if (i >= 18) {
+            wattrset(stdscr, A_BOLD);
+        }
+        mvaddstr(i, 0, art[i]);
+    }
+    freeAsciiArt(art, w, h);
+
+    wattrset(stdscr, A_BOLD | A_UNDERLINE | COLOR_PAIR(COLOR_RED));
+    mvaddstr(getmaxy(stdscr) - 1, (w - 30)/2, "[ Press any key to continue ]");
+    wattrset(stdscr, A_NORMAL);
+    getch();
+    erase();
+    refresh();
+    flash();
 }
 
 void initWindows() {
@@ -58,7 +85,7 @@ void initWindows() {
 static void _bomb(char *error_msg) {
     exitncurses();
     fputs(error_msg, stderr);
-    exit(1);
+    exit(EXIT_FAILURE);
 }
 
 void exitncurses() {
