@@ -1,4 +1,6 @@
 #include "./renderStory.h"
+#include "./renderCombat.h"
+#include "../ascii_art/ascii.h"
 #include "../choice_handling/choice_system.h"
 #include "../globals.h"
 #include "../story2/printline.h"
@@ -8,12 +10,12 @@
 #include <string.h>
 
 #define INITIALX 3
+#define PADDING 4
 #define DELAY 1
 
-static void _render(char *s, int delay, int init_y);
+static void _render(char *s, int delay, int init_y, int offset);
 static void _renderFile(char *file, int delay);
 static void _renderEvent(char *event);
-static void _renderTitle(char *title, int color);
 static void delay_addstr(char *str, int delay);
 
 void renderStory(int context) {
@@ -67,13 +69,13 @@ void nextChoice() {
     get_menu_choice(choicewin, opt, 1);
 }
 
-static void _renderTitle(char *title, int color) {
+void _renderTitle(char *title, int color) {
     wattron(mainwin, A_BOLD | COLOR_PAIR(color) | A_REVERSE);
     size_t n = strlen(title);
     wmove(mainwin, 1, (getmaxx(mainwin) - n)/2);
     for (int i = 0; i < n; i++) {
         waddch(mainwin, title[i]);
-        napms(DELAY);
+        napms(DELAY*3);
         wrefresh(mainwin);
         refresh();
     }
@@ -82,7 +84,7 @@ static void _renderTitle(char *title, int color) {
     wattroff(mainwin, A_REVERSE);
     for (int i = 0; i < n; i++) {
         waddch(mainwin, title[i]);
-        napms(DELAY);
+        napms(DELAY*3);
         wrefresh(mainwin);
         refresh();
     }
@@ -91,9 +93,10 @@ static void _renderTitle(char *title, int color) {
 
 static void _renderEvent(char *event) {
     int x, y;
-    char qualitiesFile[64], introFile[64];
+    char qualitiesFile[64], introFile[64], artFile[64];
     sprintf(introFile, "./story2/encounter_%s.txt", event);
     sprintf(qualitiesFile, "./story2/qualities_%s.txt", event);
+    sprintf(artFile, "./ascii_art/%s.txt", event);
 
     FILE *intro = fopen(introFile, "r");
     FILE *qualities = fopen(qualitiesFile, "r");
@@ -117,14 +120,20 @@ static void _renderEvent(char *event) {
     fclose(intro);
     fclose(qualities);
 
+    int artWidth, artHeight;
+    char **art = getAsciiArt(artFile, &artWidth, &artHeight);
+
     _renderTitle(title, COLOR_RED);
     napms(2*DELAY);
-    _render(encounterMsg, DELAY, 3);
+    renderArt(getmaxx(mainwin) - PADDING - artWidth, 4, art, artWidth, artHeight);
+    napms(100);
+    freeAsciiArt(art,  artWidth, artHeight);
+    _render(encounterMsg, DELAY, 3, artWidth);
     wattron(mainwin, A_ITALIC);
-    _render(qualityDesc, DELAY, 0);
+    _render(qualityDesc, DELAY, 0, artWidth);
     wattroff(mainwin, A_ITALIC);
-    _render("", 0, 0);  // Blank line
-    _render("Enemy Moves:\n", DELAY, 0);
+    _render("", 0, 0, artWidth);  // Blank line
+    _render("Enemy Moves:\n", DELAY, 0, artWidth);
 
     napms(500);
     delay_addstr("  - ", 0);
@@ -135,7 +144,7 @@ static void _renderEvent(char *event) {
     wattron(mainwin, COLOR_PAIR(COLOR_CYAN) | A_ITALIC);
     delay_addstr(desc1, DELAY);
     wattroff(mainwin, COLOR_PAIR(COLOR_CYAN) | A_ITALIC);
-    _render("", 0, 0);
+    _render("", 0, 0, artWidth);
     
     wrefresh(mainwin);
     refresh();
@@ -149,13 +158,13 @@ static void _renderEvent(char *event) {
     wattron(mainwin, COLOR_PAIR(COLOR_CYAN) | A_ITALIC);
     delay_addstr(desc2, DELAY);
     wattroff(mainwin, COLOR_PAIR(COLOR_CYAN) | A_ITALIC);
-    _render("", 0, 0);
+    _render("", 0, 0, artWidth);
     
     wrefresh(mainwin);
     refresh();
     napms(500);
 
-    _render(behavior, 2*DELAY, 0);
+    _render(behavior, 2*DELAY, 0, artWidth);
 }
 
 static void delay_addstr(char *str, int delay) {
@@ -168,14 +177,14 @@ static void delay_addstr(char *str, int delay) {
 }
 
 static void _renderFile(char *file, int delay) {
-    _render(read_file_to_string(file), delay, 3);
+    _render(read_file_to_string(file), delay, 3, 0);
 }
 
-static void _render(char *s, int delay, int init_y) {
+static void _render(char *s, int delay, int init_y, int offset) {
     int wcols;
     wcols = getmaxx(mainwin);
     int y, x;
-    int width = wcols - 4;
+    int width = wcols - PADDING - offset;
     int filled = 0;
 
     if (init_y) {

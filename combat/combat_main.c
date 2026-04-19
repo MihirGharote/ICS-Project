@@ -191,9 +191,12 @@ char* startCombat(Enemy *enemy) {
     strcat(combat_log, "\n");
     
     srand(time(NULL));
+    flash();
 
     while (player.stats.hp > 0 && enemy->stats.hp > 0) {
+        #ifndef RUNCOMBAT
         renderCombat(enemy);
+        #endif
         // Player turn
         strcat(combat_log, "\n========== PLAYER TURN ==========\n");
         char hp_str[50];
@@ -273,7 +276,8 @@ char* startCombat(Enemy *enemy) {
 
 #ifdef RUNCOMBAT
 int main() {
-    printf("%s", runCombat());
+    createPlayer();
+    printf("%s", startCombat(&enemies[1]));
     return 0;
 }
 #endif

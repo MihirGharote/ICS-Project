@@ -73,7 +73,6 @@ static void execute_level() {
     // 3. EXECUTE CHOICE
     if (choice == 1) {
         player.equipped_weapon = w1;
-        flash();
         startCombat(&villain);
     } 
     else if (choice == 2) {
