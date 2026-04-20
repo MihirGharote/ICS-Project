@@ -179,7 +179,7 @@ char* execute_enemy_choice_move(Enemy *enemy, int move_type_index) {
 
 char* startCombat(Enemy *enemy) {
     initialize_enemy_weapons();  // Ensure enemy weapons are initialized
-    static char combat_log[8192];
+    static char combat_log[16384];
     strcpy(combat_log, "Combat starts! ");
     strcat(combat_log, player.name);
     strcat(combat_log, " vs ");
@@ -217,27 +217,27 @@ char* startCombat(Enemy *enemy) {
             break;
         }
 
-        // Choice handled by teammate's code
-        // int selected_move_type = teammate_get_player_choice(move_types, move_count);
-        // For now, default to first move
         char **moveNames = (char **)malloc(12 * sizeof(char *));
         for (int i = 0; i < move_count; i++) {
             moveNames[i] = get_all_move_type_names()[move_types[i]];
         }
         #ifndef RUNCOMBAT
-        int selected_move_type = move_types[get_menu_choice(choicewin, moveNames, move_count)];
+        int selected_move_type = move_types[get_menu_choice(choicewin, moveNames, move_count) - 1];
         #else
         int selected_move_type = move_types[0];
         #endif
         free(moveNames);        
 
         char* player_msg = execute_player_choice_move(enemy, selected_move_type);
+        #ifndef RUNCOMBAT
         renderPlayerAttack(player_msg, enemy);
+        #endif
         strcat(combat_log, player_msg);
         strcat(combat_log, "\n");
         
         char* status_msg = handle_status_ticks(&enemy->stats, enemy->afflictions);
         if (strlen(status_msg) > 0) {
+            //renderEnemyAttack(status_msg, enemy);
             strcat(combat_log, status_msg);
         }
         
@@ -258,7 +258,9 @@ char* startCombat(Enemy *enemy) {
             sprintf(move_str, "%s uses %s!\n", enemy->name, get_move_type_name(enemy_selected_move));
             strcat(combat_log, move_str);
             char* enemy_msg = execute_enemy_choice_move(enemy, enemy_selected_move);
+            #ifndef RUNCOMBAT
             renderEnemyAttack(enemy_msg, enemy);
+            #endif
             strcat(combat_log, enemy_msg);
             strcat(combat_log, "\n");
         }
@@ -278,7 +280,8 @@ char* startCombat(Enemy *enemy) {
 #ifdef RUNCOMBAT
 int main() {
     createPlayer();
-    printf("%s", startCombat(&enemies[1]));
+    player.equipped_weapon = weapon_bow();
+    printf("%s", startCombat(&enemies[0]));
     return 0;
 }
 #endif
