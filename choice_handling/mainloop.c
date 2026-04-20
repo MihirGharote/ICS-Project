@@ -25,9 +25,9 @@ static void execute_level() {
             villain = enemies[0];
             villain.equipped_weapon = weapon_iron_fist();
             strcpy(result, "./story2/goblin_result.txt");
-            w1 = weapon_bare_hands();
+            w1 = weapon_bow();
             w2 = weapon_ancient_sword();
-            menu_opts[0] = "Attack: Bare Hands";
+            menu_opts[0] = "Attack: Short Bow";
             menu_opts[1] = "Attack: Ancient Sword";
             menu_opts[2] = "Strategy: Reaction Test";
             break;
@@ -95,6 +95,14 @@ static void execute_level() {
     // 4. POST-ENCOUNTER UPDATES
     // Check if wisdom increased enough to evolve weapon
     player.equipped_weapon = get_evolved_weapon(level, player.wisdom_level);
+    
+    werase(choicewin);
+    box(choicewin, 0, 0);
+    wattron(choicewin, A_HEADER);
+    mvwprintw(choicewin, 0, 2, " Choices ");
+    wattroff(choicewin, A_HEADER);
+    wrefresh(choicewin);
+    refresh();
     renderResult(result);
 }
 
